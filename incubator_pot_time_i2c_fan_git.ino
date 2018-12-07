@@ -7,6 +7,8 @@
 #include <LiquidCrystal.h>
 #include <DHT.h>
 #include <Adafruit_Sensor.h>
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
 
 // Temp/Humidity Sensor
 #define DHTPIN 8     // what pin we're connected to
@@ -17,8 +19,8 @@ DHT dht(DHTPIN, DHTTYPE);
 // Relay
 #define RELAYPIN 9
 
-// initialize the library with the numbers of the interface pins
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+//I2C pins declaration
+LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 //Variables
 float hum;   //Stores humidity value
@@ -45,12 +47,12 @@ void setup()
   pinMode(RELAYPIN, OUTPUT);
   // set up the number of columns and rows on the LCD 
   lcd.begin(16, 2);
+  lcd.backlight();//To Power ON the back light
+  //lcd.backlight();// To Power OFF the back light
 }
 
 void loop()
-{
-  time();
-  
+{ 
   potval = analogRead(potpin); // valeur de potval entre 0 et 1024
   tset = map(potval, 0, 1023, 10, 40);// reechelonne entre 0 et 40
     
@@ -82,6 +84,9 @@ void loop()
     digitalWrite(RELAYPIN, HIGH); // arret de la lampe si prb de connection
     return;
   }
+  
+  time();
+  
   // lcd print Temperature
   //lcd.clear();
   lcd.setCursor(0,0);
