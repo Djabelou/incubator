@@ -28,8 +28,12 @@ int temppr; // rounded tempp
 int const potpin = A0; // // select the input pin for the potentiometer
 int potval; // valeur potentiometre
 int tset;  //Stores the set temperature
-float timems; // time in ms since log in
-float timehh; // time in h
+
+// Time
+long day = 86400000; // 86400000 milliseconds in a day
+long hour = 3600000; // 3600000 milliseconds in an hour
+long minute = 60000; // 60000 milliseconds in a minute
+long second =  1000; // 1000 milliseconds in a second
 
 void setup()
 {
@@ -45,8 +49,7 @@ void setup()
 
 void loop()
 {
-  timems = millis();
-  timehh = timems / 3600000;
+  time();
   
   potval = analogRead(potpin); // valeur de potval entre 0 et 1024
   tset = map(potval, 0, 1023, 10, 40);// reechelonne entre 0 et 40
@@ -80,7 +83,7 @@ void loop()
     return;
   }
   // lcd print Temperature
-  lcd.clear();
+  //lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Ts:");
   lcd.print(tset);
@@ -93,10 +96,6 @@ void loop()
   lcd.print("T :");
   lcd.print(temppr);
   lcd.print(" C");
-  lcd.setCursor(10,1);
-  lcd.print("t:");
-  lcd.print(timehh,1);
-  lcd.print("h");
   
   //Print temp and humidity values to serial monitor
     Serial.print("Humidity: ");
@@ -115,7 +114,28 @@ void loop()
   digitalWrite(RELAYPIN, HIGH);
   //delay(60000);
   }
-  //delay(500);
+  //delay(1000);
 }
 
 
+void time(){
+  long timeNow = millis();
+  int days = timeNow / day ;                                //number of days
+  int hours = (timeNow % day) / hour;                       //the remainder from days division (in milliseconds) divided by hours, this gives the full hours
+  int minutes = ((timeNow % day) % hour) / minute ;         //and so on...
+  int seconds = (((timeNow % day) % hour) % minute) / second;
+  
+  // digital clock display of current time
+  lcd.setCursor(9,1);
+  lcd.print(days,DEC);
+  printDigits(hours);  
+  printDigits(minutes);
+}
+
+void printDigits(byte digits){
+   // utility function for digital clock display: prints colon and leading 0
+   lcd.print(":");
+   if(digits < 10)
+     lcd.print('0');
+     lcd.print(digits,DEC);  
+}
