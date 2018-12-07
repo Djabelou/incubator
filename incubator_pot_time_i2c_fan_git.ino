@@ -1,71 +1,72 @@
-// Needed Libraries:
-// LCD Shield: https://github.com/adafruit/Adafruit-RGB-LCD-Shield-Library
-// DHT Sensor: https://github.com/adafruit/DHT-sensor-library
+#include <Adafruit_Sensor.h>
+
+// include the library code:
+#include <LiquidCrystal.h>
+#include <DHT.h>
 
 // Temp/Humidity Sensor
-#include "DHT.h"
-
-// LCD
-#include <Wire.h>
-#include <Adafruit_MCP23017.h>
-#include <Adafruit_RGBLCDShield.h>
-
-// Temp/Humidity Sensor
-#define DHTPIN 2     // what pin we're connected to
+#define DHTPIN 8     // what pin we're connected to
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
 // Initialize DHT sensor for normal 16mhz Arduino
 DHT dht(DHTPIN, DHTTYPE);
 
-// LCD
-Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
-
 // Relay
-#define RELAYPIN 3
+#define RELAYPIN 9
 
-void setup() {
-  Serial.begin(9600); 
-  // set up the LCD's number of columns and rows: 
-  lcd.begin(16, 2);
-  lcd.print("Lets Hatch Some");
-  lcd.setCursor(0,1);
-  lcd.print("EGGS!!!");
-  lcd.setBacklight(0x1);
- 
+// initialize the library with the numbers of the interface pins
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+//Variables
+float hum;  //Stores humidity value
+float tempp; //Stores temperature value Celsius
+
+void setup()
+{
   // setup the Tempt/Humidity Sensor 
   dht.begin();
-  
+  // print on laptop screen
+  Serial.begin(9600);
   // Setup relay
   pinMode(RELAYPIN, OUTPUT);
+  // set up the number of columns and rows on the LCD 
+  lcd.begin(16, 2);
 }
 
-void loop() {
+void loop()
+{
   // Wait a few seconds between measurements.
   delay(2000);
-
-  // Reading temperature or humidity takes about 250 milliseconds!
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  float humidity = dht.readHumidity();
-  // Read temperature as Fahrenheit
-  float temp = dht.readTemperature(true);
-  
+  //Read data and store it to variables hum and temp
+  hum = dht.readHumidity();
+  tempp= dht.readTemperature();
   // Check if any reads failed and exit early (to try again).
-  if (isnan(humidity) || isnan(temp)) {
+  if (isnan(hum) || isnan(tempp))
+  {
     Serial.println("Failed to read from DHT sensor!");
     return;
   }
-  
-  if (temp < 100) {
-    digitalWrite(RELAYPIN, HIGH);
-  } else if (temp > 101) {
-    digitalWrite(RELAYPIN, LOW);
-  }    
-  
+  // lcd print Temperature
+  lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("H: "); 
-  lcd.print(humidity);
-  lcd.print(" %      ");
+  lcd.print("Temperature:");
   lcd.setCursor(0,1);
-  lcd.print("T: "); 
-  lcd.print(temp);
-  lcd.print(" F      ");
+  lcd.print(tempp);
+  lcd.print("C");
+  //Print temp and humidity values to serial monitor
+    Serial.print("Humidity: ");
+    Serial.print(hum);
+    Serial.print(" %, Temp: ");
+    Serial.print(tempp);
+    Serial.println(" Celsius");
+  // Condition d'allumage de la lampe
+  if (tempp < 34)
+  {
+  digitalWrite(RELAYPIN, LOW);
+  } 
+  else if (tempp > 35)
+  {
+  digitalWrite(RELAYPIN, HIGH);
+  }
 }
+
+
