@@ -1,5 +1,5 @@
 // Script Arduino pour programmer un incubateur
-// mesure dela température avec DHT22
+// mesure de la température avec DHT22
 // relay 5V pour controler une lampe (100W) sur 220V
 // ecran lcd LCM1602C
 
@@ -25,6 +25,9 @@ float hum;   //Stores humidity value
 float tempp; //Stores temperature value Celsius
 float tset;  //Stores the set temperature
 
+//1 int potpin = 2; // // select the input pin for the potentiometer
+//1 int potval; // valeur potentiometre
+
 void setup()
 {
   // setup the Tempt/Humidity Sensor 
@@ -39,7 +42,13 @@ void setup()
 
 void loop()
 {
-  tset = 34;
+  // temperature setting
+  // tempeh: 34°C puis 30°C après 12h
+  tset = 30;
+  
+  //1 potval = analogRead(potpin); // valeur de potval entre 0 et 1024
+  //1 int tset = map(potval, 0, 1023, 0, 50);// reechelonne entre 0 et 50
+  
   //Read data and store it to variables hum and temp
   hum = dht.readHumidity();
   tempp= dht.readTemperature();
@@ -77,7 +86,7 @@ void loop()
   digitalWrite(RELAYPIN, LOW);
   delay(1000);
   } 
-  else if (tempp > tset + 0.5)
+  else if (tempp > tset + 0.1)
   {
   digitalWrite(RELAYPIN, HIGH);
   delay(60000);
