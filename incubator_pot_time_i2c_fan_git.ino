@@ -22,12 +22,14 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 //Variables
 float hum;   //Stores humidity value
+int humr; // rounded humidity
 float tempp; //Stores temperature value Celsius
-float tset;  //Stores the set temperature
-int hum1;    // arrondi de hum
-
-//1 int potpin = 2; // // select the input pin for the potentiometer
-//1 int potval; // valeur potentiometre
+int temppr; // rounded tempp
+int const potpin = A0; // // select the input pin for the potentiometer
+int potval; // valeur potentiometre
+int tset;  //Stores the set temperature
+float timems; // time in ms since log in
+float timehh; // time in h
 
 void setup()
 {
@@ -43,22 +45,35 @@ void setup()
 
 void loop()
 {
-  // temperature setting
-  // tempeh: 34°C puis 30°C après 12h
-  // saccharomyces cerevisiae: 35°C
-  tset = 35;
+  timems = millis();
+  timehh = timems / 3600000;
   
+  potval = analogRead(potpin); // valeur de potval entre 0 et 1024
+  tset = map(potval, 0, 1023, 10, 40);// reechelonne entre 0 et 40
+    
+  if (potval > 1023 || isnan(potval)) // check if potpin is well connected
+  {
+    Serial.println("Failed to read from pot!");
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("pot failed");
+    lcd.setCursor(0,1);
+    lcd.print("lamp stopped");
+    digitalWrite(RELAYPIN, HIGH); // arret de la lampe si prb de connection
+    return;
+  }
   //Read data and store it to variables hum and temp
   hum = dht.readHumidity();
-  hum1=round(hum);
+  humr=round(hum);
   tempp= dht.readTemperature();
+  temppr= round(tempp);
   // Check if any reads failed and exit early (to try again).
   if (isnan(hum) || isnan(tempp)) // check if dht22 is well connected
   {
     Serial.println("Failed to read from DHT sensor!");
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("Failed reading");
+    lcd.print("DHT Failed");
     lcd.setCursor(0,1);
     lcd.print("lamp stopped");
     digitalWrite(RELAYPIN, HIGH); // arret de la lampe si prb de connection
@@ -69,15 +84,20 @@ void loop()
   lcd.setCursor(0,0);
   lcd.print("Ts:");
   lcd.print(tset);
-  lcd.print("C");
+  lcd.print(" C");
   lcd.setCursor(10,0);
   lcd.print("H:");
-  lcd.print(hum1);
+  lcd.print(humr);
   lcd.print("%");
   lcd.setCursor(0,1);
-  lcd.print("T :");  
-  lcd.print(tempp);
-  lcd.print("C");
+  lcd.print("T :");
+  lcd.print(temppr);
+  lcd.print(" C");
+  lcd.setCursor(10,1);
+  lcd.print("t:");
+  lcd.print(timehh,1);
+  lcd.print("h");
+  
   //Print temp and humidity values to serial monitor
     Serial.print("Humidity: ");
     Serial.print(hum);
@@ -85,17 +105,17 @@ void loop()
     Serial.print(tempp);
     Serial.println(" Celsius");
   // Condition d'allumage de la lampe
-  if (tempp < tset)
+  if (temppr < tset)
   {
   digitalWrite(RELAYPIN, LOW);
-  delay(1000);
+  delay(500);
   } 
-  else if (tempp > tset + 0.1)
+  else if (temppr > tset)
   {
   digitalWrite(RELAYPIN, HIGH);
-  delay(30000);
+  //delay(60000);
   }
-  delay(500);
+  //delay(500);
 }
 
 
