@@ -39,8 +39,6 @@ void setup()
 
 void loop()
 {
-  // Wait a few seconds between measurements.
-  delay(2000);
   tset = 34;
   //Read data and store it to variables hum and temp
   hum = dht.readHumidity();
@@ -52,6 +50,8 @@ void loop()
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("Failed reading");
+    lcd.setCursor(0,1);
+    lcd.print("lamp stopped");
     digitalWrite(RELAYPIN, HIGH); // arret de la lampe si prb de connection
     return;
   }
@@ -75,11 +75,14 @@ void loop()
   if (tempp < tset)
   {
   digitalWrite(RELAYPIN, LOW);
+  delay(1000);
   } 
-  else if (tempp > tset + 1)
+  else if (tempp > tset + 0.5)
   {
   digitalWrite(RELAYPIN, HIGH);
+  delay(60000);
   }
+  delay(1000);
 }
 
 
