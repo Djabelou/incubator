@@ -24,6 +24,7 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 float hum;   //Stores humidity value
 float tempp; //Stores temperature value Celsius
 float tset;  //Stores the set temperature
+int hum1;    // arrondi de hum
 
 //1 int potpin = 2; // // select the input pin for the potentiometer
 //1 int potval; // valeur potentiometre
@@ -44,13 +45,12 @@ void loop()
 {
   // temperature setting
   // tempeh: 34°C puis 30°C après 12h
-  tset = 30;
-  
-  //1 potval = analogRead(potpin); // valeur de potval entre 0 et 1024
-  //1 int tset = map(potval, 0, 1023, 0, 50);// reechelonne entre 0 et 50
+  // saccharomyces cerevisiae: 35°C
+  tset = 35;
   
   //Read data and store it to variables hum and temp
   hum = dht.readHumidity();
+  hum1=round(hum);
   tempp= dht.readTemperature();
   // Check if any reads failed and exit early (to try again).
   if (isnan(hum) || isnan(tempp)) // check if dht22 is well connected
@@ -67,13 +67,17 @@ void loop()
   // lcd print Temperature
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("Tset:");
+  lcd.print("Ts:");
   lcd.print(tset);
-  lcd.print(" C");
+  lcd.print("C");
+  lcd.setCursor(10,0);
+  lcd.print("H:");
+  lcd.print(hum1);
+  lcd.print("%");
   lcd.setCursor(0,1);
-  lcd.print("T:");
+  lcd.print("T :");  
   lcd.print(tempp);
-  lcd.print(" C");
+  lcd.print("C");
   //Print temp and humidity values to serial monitor
     Serial.print("Humidity: ");
     Serial.print(hum);
@@ -89,9 +93,9 @@ void loop()
   else if (tempp > tset + 0.1)
   {
   digitalWrite(RELAYPIN, HIGH);
-  delay(60000);
+  delay(30000);
   }
-  delay(1000);
+  delay(500);
 }
 
 
