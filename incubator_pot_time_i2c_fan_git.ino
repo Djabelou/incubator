@@ -59,6 +59,14 @@ int humr1;
 int tset1;
 int temppr1;
 
+// to mesure the watt
+long t = millis();
+int ton = 0;
+int toff = 0;
+int tonm;
+int w;
+int lampw = 100;
+
 void setup()
 {
   // setup the Tempt/Humidity Sensor 
@@ -85,8 +93,9 @@ void loop()
   humr1 = humr;
   temppr1=temppr;
   tset1=tset;
-    
-  if (potval > 1023 || isnan(potval)) // check if potpin is well connected
+  
+  // check if potpin is well connected
+  if (potval > 1023 || isnan(potval))
   {
     Serial.println("Failed to read from pot!");
     lcd.clear();
@@ -118,6 +127,7 @@ void loop()
     return;
   }
   
+  // limit the lcd screen refresh
   if ( humr != humr1 || tset != tset1 || temppr != temppr1 )
   {
     lcd.clear();
@@ -128,17 +138,20 @@ void loop()
   // lcd print Temperature
   //lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("Ts:");
+  lcd.print("S:");
   lcd.print(tset);
+  //lcd.print("'C");
+  lcd.setCursor(5,0);
+  lcd.print(temppr);
   lcd.print("'C");
   lcd.setCursor(10,0);
-  lcd.print("H:");
   lcd.print(humr);
   lcd.print("%");
   lcd.setCursor(0,1);
-  lcd.print("T :");
-  lcd.print(temppr);
-  lcd.print("'C");
+  lcd.print("On:");
+  lcd.print(tonm);
+  lcd.print("'");
+  
   
   //Print temp and humidity values to serial monitor
   Serial.print("Humidity: ");
@@ -153,11 +166,13 @@ void loop()
   // Condition d'allumage de la lampe
   if (temppr < tset)
   {
+  ton = t - toff;
   digitalWrite(RELAYPIN1, LOW);
   Serial.print("Lamp ON ");
   } 
   else if (temppr >= tset + 1)
   {
+  toff = t - ton;
   digitalWrite(RELAYPIN1, HIGH);
   Serial.print("Lamp OFF ");
   }
@@ -173,6 +188,9 @@ void loop()
   digitalWrite(RELAYPIN2, HIGH);
   Serial.print("Fan OFF ");
   }
+
+  tonm = round(ton / 1000*60);
+  w = round(lampw * tonm/60);
   
   delay(500);
 }
