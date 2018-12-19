@@ -133,18 +133,18 @@ void loop()
     lcd.clear();
   }
   
+  // time function
   time();
   
-  // lcd print Temperature
-  //lcd.clear();
+  // lcd print
   lcd.setCursor(0,0);
-  lcd.print("S:");
+  lcd.print("T:");
   lcd.print(tset);
-  //lcd.print("'C");
-  lcd.setCursor(5,0);
+  lcd.print("'C");
+  lcd.setCursor(7,0);
   lcd.print(temppr);
   lcd.print("'C");
-  lcd.setCursor(10,0);
+  lcd.setCursor(12,0);
   lcd.print(humr);
   lcd.print("%");
   lcd.setCursor(0,1);
