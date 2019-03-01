@@ -59,14 +59,6 @@ int humr1;
 int tset1;
 int temppr1;
 
-// to mesure the watt
-long t = millis();
-int ton = 0;
-int toff = 0;
-int tons;
-int w;
-int lampw = 100;
-
 void setup()
 {
   // setup the Tempt/Humidity Sensor 
@@ -147,12 +139,9 @@ void loop()
   lcd.setCursor(12,0);
   lcd.print(humr);
   lcd.print("%");
-  lcd.setCursor(0,1);
-  lcd.print("On:");
-  lcd.print(tons);
-  lcd.print("''");
   
-  
+  watt();
+
   //Print temp and humidity values to serial monitor
   Serial.print("Humidity: ");
   Serial.print(hum);
@@ -166,13 +155,11 @@ void loop()
   // Condition d'allumage de la lampe
   if (temppr < tset)
   {
-  ton = t - toff;
   digitalWrite(RELAYPIN1, LOW);
   Serial.print("Lamp ON ");
   } 
   else if (temppr >= tset + 1)
   {
-  toff = t - ton;
   digitalWrite(RELAYPIN1, HIGH);
   Serial.print("Lamp OFF ");
   }
@@ -188,9 +175,6 @@ void loop()
   digitalWrite(RELAYPIN2, HIGH);
   Serial.print("Fan OFF ");
   }
-
-  tons = round(ton / 1000);
-  w = round(lampw * tons/3600);
   
   delay(500);
 }
@@ -223,4 +207,29 @@ void printDigits(byte digits){
    if(digits < 10)
      lcd.print('0');
      lcd.print(digits,DEC);  
+}
+
+void watt()
+{
+int ton = 0;
+int toff = 0;
+int tons;
+int w;
+int lampw = 100;
+
+if (temppr < tset)
+  {
+  ton = millis() - toff;
+  }
+else if (temppr >= tset + 1)
+  {
+  toff = millis() - ton;
+  }
+tons = round(ton / 1000);
+w = round(lampw * tons/3600);
+
+lcd.setCursor(0,1);
+lcd.print("On:");
+lcd.print(tons);
+lcd.print("''");
 }
