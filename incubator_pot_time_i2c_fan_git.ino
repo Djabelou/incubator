@@ -63,7 +63,7 @@ int temppr1;
 long t = millis();
 int ton = 0;
 int toff = 0;
-int tonm;
+int tons;
 int w;
 int lampw = 100;
 
@@ -149,8 +149,8 @@ void loop()
   lcd.print("%");
   lcd.setCursor(0,1);
   lcd.print("On:");
-  lcd.print(tonm);
-  lcd.print("'");
+  lcd.print(tons);
+  lcd.print("''");
   
   
   //Print temp and humidity values to serial monitor
@@ -189,8 +189,8 @@ void loop()
   Serial.print("Fan OFF ");
   }
 
-  tonm = round(ton / 1000*60);
-  w = round(lampw * tonm/60);
+  tons = round(ton / 1000);
+  w = round(lampw * tons/3600);
   
   delay(500);
 }
