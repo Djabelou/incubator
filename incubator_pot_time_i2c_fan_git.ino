@@ -59,6 +59,9 @@ int humr1;
 int tset1;
 int temppr1;
 
+int ton=0;
+int toff=0;
+
 void setup()
 {
   // setup the Tempt/Humidity Sensor 
@@ -80,7 +83,8 @@ void setup()
 void loop()
 { 
   potval = analogRead(potpin); // valeur de potval entre 0 et 1024
-  tset = map(potval, 0, 1023, 20, 36);// reechelonne entre 20°C et 35°C
+  //tset = map(potval, 0, 1023, 20, 36);// reechelonne entre 20°C et 35°C
+  tset=32;
   
   humr1 = humr;
   temppr1=temppr;
@@ -211,8 +215,6 @@ void printDigits(byte digits){
 
 void watt()
 {
-int ton = 0;
-int toff = 0;
 int tons;
 int w;
 int lampw = 100;
@@ -221,7 +223,7 @@ if (temppr < tset)
   {
   ton = millis() - toff;
   }
-else if (temppr >= tset + 1)
+else
   {
   toff = millis() - ton;
   }
@@ -231,5 +233,8 @@ w = round(lampw * tons/3600);
 lcd.setCursor(0,1);
 lcd.print("On:");
 lcd.print(tons);
+Serial.print(" ton");
+Serial.print(tons);
+Serial.print(" ");
 lcd.print("''");
 }
