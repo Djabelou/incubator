@@ -75,6 +75,9 @@ void setup()
   
   humr=0;
   temppr=0;
+  
+  digitalWrite(RELAYPIN1, HIGH);
+  digitalWrite(RELAYPIN2, HIGH);
 }
 
 void loop()
