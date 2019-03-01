@@ -79,6 +79,9 @@ void setup()
 
 void loop()
 { 
+  
+  intro();
+  
   potval = analogRead(potpin); // valeur de potval entre 0 et 1024
   tset = map(potval, 0, 1023, 20, 36);// reechelonne entre 20°C et 35°C
   
@@ -205,4 +208,15 @@ void printDigits(byte digits){
    if(digits < 10)
      lcd.print('0');
      lcd.print(digits,DEC);  
+}
+
+void intro()
+{
+while(millis()<1000*5)
+  {
+  lcd.setCursor(0,0);
+  lcd.print("Incubator");
+  lcd.setCursor(0,1);
+  lcd.print("010319 Raph81212");
+  }
 }
